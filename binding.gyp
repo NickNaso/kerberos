@@ -2,7 +2,10 @@
   'targets': [
     {
       'target_name': 'kerberos',
-      'include_dirs': [ '<!(node -e "require(\'nan\')")' ],
+      'include_dirs': ['<!@(node -p \"require('node-addon-api').include\")'],
+      'dependencies': ['<!(node -p \"require('node-addon-api').gyp\")'],
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
       'sources': [
         'src/kerberos.cc'
       ],
@@ -31,12 +34,15 @@
               'secur32.lib',
               'Shlwapi.lib'
             ]
+          },
+          'msvs_settings': {
+            'VCCLCompilerTool': { 'ExceptionHandling': 1 }
           }
         }],
         ['OS=="mac"', {
-          'cflags!': [ '-fno-exceptions' ],
-          'cflags_cc!': [ '-fno-exceptions' ],
           'xcode_settings': {
+            'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+            'CLANG_CXX_LIBRARY': 'libc++',
             'GCC_ENABLE_CPP_RTTI': 'YES',
             'OTHER_CPLUSPLUSFLAGS' : [ '-std=c++11', '-stdlib=libc++' ],
             'OTHER_LDFLAGS': [ '-stdlib=libc++' ],
