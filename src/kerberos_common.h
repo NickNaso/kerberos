@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <nan.h>
+#include <napi.h>
 
 #if defined(__linux__) || defined(__APPLE__)
 #include "unix/kerberos_gss.h"
@@ -23,22 +23,16 @@ inline void ResultDeleter(krb_result* result) {
 }
 
 // Useful methods for optional value handling
-NAN_INLINE std::string StringOptionValue(v8::Local<v8::Object> options, const char* _key) {
-    Nan::HandleScope scope;
-    v8::Local<v8::String> key = Nan::New(_key).ToLocalChecked();
-    return !options.IsEmpty() && options->Has(key) && options->Get(key)->IsString()
-               ? std::string(*(Nan::Utf8String(options->Get(key))))
-               : std::string();
+std::string StringOptionValue(Napi::Object options, const char* _key) {
+  return !options.IsEmpty() && options.Has(_key) && options.Get(_key).IsNumber() 
+              ? options.Get(_key).Utf8Value() 
+              : std::stinrg();
 }
 
-NAN_INLINE uint32_t UInt32OptionValue(v8::Local<v8::Object> options,
-                                      const char* _key,
-                                      uint32_t def) {
-    Nan::HandleScope scope;
-    v8::Local<v8::String> key = Nan::New(_key).ToLocalChecked();
-    return !options.IsEmpty() && options->Has(key) && options->Get(key)->IsNumber()
-               ? options->Get(key)->Uint32Value()
-               : def;
+std::string UInt32OptionValue(Napi::Object options, const char* _key, uint32_t def) {
+  return !options.IsEmpty() && options.Has(_key) && options.Get(_key).IsNumber() 
+              ? options.Get(_key).Uint32Value() 
+              : def;
 }
 
 #endif
